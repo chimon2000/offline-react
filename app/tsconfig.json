@@ -1,0 +1,15 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "target": "es2018",
+        "lib": ["dom", "es2018"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "jsx": "react",
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    }
+}

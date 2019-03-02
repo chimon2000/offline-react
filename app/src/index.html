@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Offline React</title>
+        <style>
+            body {
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+        <script src="index.tsx"></script>
+        <script type="module">
+            import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/4.0.0/workbox-window.prod.mjs'
+
+            const registerServiceWorker = async () => {
+                try {
+                    const wb = new Workbox('/sw.js')
+
+                    wb.addEventListener('installed', event => {
+                        if (event.isUpdate) {
+                            if (confirm(`New content is available!. Click OK to refresh`)) {
+                                window.location.reload()
+                            }
+                        }
+                    })
+
+                    wb.register()
+
+                    console.log(`Service Worker registered! `)
+
+                    return wb
+                } catch (err) {
+                    console.log(`Service Worker registration failed: ${err}`)
+
+                    return null
+                }
+            }
+
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', async () => {
+                    await registerServiceWorker()
+                })
+            }
+        </script>
+    </body>
+</html>
