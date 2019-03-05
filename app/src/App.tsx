@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react'
-import { ThemeProvider, Heading, Container } from 'fannypack'
+import { ThemeProvider, Heading, Container, withToasts, Toast, css } from 'fannypack'
 import { useFetch } from './hooks/use-fetch'
 import EventList from './components/EventList'
 import EventForm from './components/EventForm'
 import { saveEventDataLocally } from './db'
+import { hot } from 'react-hot-loader'
+
+import { CacheUpdateToast } from './components/UpdateToast'
 
 const baseUrl = '/api'
 
-export function App() {
+export function App(props) {
     const [eventsJson, loading] = useFetch<any[]>(`${baseUrl}/getAll`)
     const [events, updateEvents] = useState([])
     useEffect(() => {
@@ -16,7 +19,7 @@ export function App() {
 
     const addPostEvent = data => {
         const newEvent = { id: Date.now(), ...data }
-        console.log(newEvent)
+
         const body = JSON.stringify(newEvent)
         const headers = new Headers({ 'Content-Type': 'application/json' })
         const updatedEvents = events.concat(newEvent)
@@ -29,13 +32,18 @@ export function App() {
             body: body
         })
     }
+
     return (
         <ThemeProvider>
             <Container>
-                <Heading>Current Events</Heading>
+                <Toast.Container>{toast => <CacheUpdateToast toast={toast} />}</Toast.Container>
+                <Heading>Current Events {!loading && `(${events.length})`}</Heading>
                 {loading ? <div>Loading...</div> : <EventList events={events} />}
                 <EventForm onSubmit={addPostEvent} />
             </Container>
         </ThemeProvider>
     )
 }
+
+export default hot(module)(withToasts(App))
+//

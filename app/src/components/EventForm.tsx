@@ -1,5 +1,5 @@
 import React from 'react'
-import { formikField, InputField, TextareaField, FieldSet, Pane, Heading, Button, Set } from 'fannypack'
+import { formikField, InputField, TextareaField, FieldSet, Pane, Heading, Button } from 'fannypack'
 import { Formik, Form, Field } from 'formik'
 
 const FormikInputField = formikField(InputField)
@@ -9,7 +9,7 @@ function EventForm({ onSubmit }) {
     return (
         <Formik initialValues={{ username: '', date: '', city: '', note: '' }} onSubmit={data => onSubmit(data)}>
             <Form>
-                <Pane margin="10px auto" maxWidth="50%" border="shadow" padding="major-4">
+                <Pane margin="10px auto" minWidth="400px" width="50%" border="shadow" padding="major-4">
                     <Heading>Add an event</Heading>
                     <FieldSet>
                         <Field component={FormikInputField} name="title" label="Title" />

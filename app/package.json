@@ -1,38 +1,27 @@
 {
     "name": "app",
     "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
+    "private": true,
     "scripts": {
-        "start": "parcel src/index.html"
-    },
-    "browserslist": [
-        "last 1 Chrome version"
-    ],
-    "dependencies": {
-        "express": "^4.16.4",
-        "fannypack": "^4.11.23",
-        "formik": "^1.5.1",
-        "http-proxy-middleware": "^0.19.1",
-        "idb": "^3.0.2",
-        "react": "^16.8.3",
-        "react-dom": "^16.8.3",
-        "workbox-build": "^4.0.0"
+        "build": "poi --prod",
+        "dev": "poi --serve",
+        "start": "npm run dev"
     },
     "devDependencies": {
         "@types/react": "^16.8.6",
         "@types/react-dom": "^16.8.2",
-        "parcel-bundler": "^1.11.0",
-        "parcel-plugin-sw-cache": "^0.2.7",
-        "typescript": "^3.3.3333"
+        "poi": "^12.0.0",
+        "pwa-html-webpack-plugin": "^12.0.0",
+        "workbox-webpack-plugin": "^4.0.0"
     },
-    "cache": {
-        "inDev": true,
-        "strategy": "inject",
-        "swSrc": "src/sw.js",
-        "globPatterns": [
-            "**/*.{html,js,css,jpg,png,gif,svg,eot,ttf,woff,woff2}",
-            "src.f69400ca.js"
-        ]
+    "dependencies": {
+        "fannypack": "^4.11.26",
+        "formik": "^1.5.1",
+        "idb": "^3.0.2",
+        "mitt": "^1.1.3",
+        "react": "^16.8.3",
+        "react-dom": "^16.8.3",
+        "react-hot-loader": "^4.7.2",
+        "workbox-window": "^4.0.0"
     }
 }
