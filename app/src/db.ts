@@ -12,7 +12,8 @@ function createIndexedDB() {
         }
     })
 }
-export async function saveEventDataLocally(events) {
+
+export async function saveEventDataLocally(events, removeMissing = false) {
     console.log('Adding events to idb', events)
 
     if (!('indexedDB' in window)) {
@@ -26,6 +27,17 @@ export async function saveEventDataLocally(events) {
         tx.abort()
         throw Error('Events were not added to the store')
     })
+
+    if (removeMissing) {
+        const cache = await store.getAll()
+        const cacheIds = cache.map(cachedEvent => cachedEvent.id)
+        const deletedIds = cacheIds.filter(id => !events.some(event => event.id === id))
+
+        await Promise.all(deletedIds.map(event => store.delete(event))).catch(() => {
+            tx.abort()
+            throw Error('Old events were not deleted from the store')
+        })
+    }
 }
 
 export async function getLocalEventData() {

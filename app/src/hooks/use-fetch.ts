@@ -1,20 +1,43 @@
 import { useState, useEffect } from 'react'
-import { openDb } from 'idb'
 import { saveEventDataLocally, getLocalEventData } from '../db'
+import emitter from '../emitter'
+import isEqual from 'react-fast-compare'
+type JsonResponse = any
 
-function useFetch<T>(url: string): [T | undefined, boolean] {
+async function getJSON(url) {
+    const response = await fetch(url)
+    const json = await response.json()
+
+    return json
+}
+
+function useFetch<T>(url: string, cacheFirst: boolean = false): [T | undefined, boolean] {
     const [data, setData] = useState<T | undefined>(undefined)
     const [loading, setLoading] = useState(true)
 
     async function fetchUrl() {
         try {
-            const response = await fetch(url)
-            const json = await response.json()
-            saveEventDataLocally(json)
-            setData(json)
-            setLoading(false)
+            if (cacheFirst) {
+                const cachedJson: JsonResponse = await getLocalEventData()
+                setData(cachedJson)
+                setLoading(false)
+
+                const json = await getJSON(url)
+                const hasUpdate = !isEqual(cachedJson, json)
+
+                if (hasUpdate) {
+                    await saveEventDataLocally(json, true)
+
+                    emitter.emit('db-update')
+                }
+            } else {
+                const json = await getJSON(url)
+
+                setData(json)
+                setLoading(false)
+            }
         } catch {
-            const cachedJson: any = await getLocalEventData()
+            const cachedJson: JsonResponse = await getLocalEventData()
             setData(cachedJson)
             setLoading(false)
         }
