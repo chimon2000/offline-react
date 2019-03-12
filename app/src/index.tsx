@@ -6,6 +6,7 @@ import emitter from './emitter'
 
 render(<App />, document.getElementById('app'))
 
+//1: Convert application to cache assets Workbox
 const registerServiceWorker = async () => {
     try {
         const wb = new Workbox('/sw.js')

@@ -2,13 +2,18 @@ if (!workbox) {
     console.log('Not loaded')
 } else {
     workbox.setConfig({ debug: true })
-    workbox.core.skipWaiting()
-    workbox.core.clientsClaim()
-    workbox.precaching.precacheAndRoute(self.__precacheManifest)
-
+    setupCache()
     registerBackgroundSync()
 }
 
+//1: Convert application to cache assets Workbox
+function setupCache() {
+    workbox.core.skipWaiting()
+    workbox.core.clientsClaim()
+    workbox.precaching.precacheAndRoute(self.__precacheManifest)
+}
+
+//3: Convert application to cache assets Workbox
 function registerBackgroundSync() {
     const bgSyncPlugin = new workbox.backgroundSync.Plugin('myQueueName', {
         maxRetentionTime: 24 * 60 // Retry for max of 24 Hours
@@ -21,6 +26,7 @@ function registerBackgroundSync() {
     workbox.routing.registerRoute(/\/api\/add/, networkWithBackgroundSync, 'POST')
 }
 
+//4: Convert application to cache assets Workbox
 function registerCustomBackgroundSync() {
     const onSync = async ({ queue }) => {
         let entry

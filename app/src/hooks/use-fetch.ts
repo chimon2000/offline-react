@@ -17,6 +17,7 @@ function useFetch<T>(url: string, cacheFirst: boolean = false): [T | undefined, 
 
     async function fetchUrl() {
         try {
+            //2: Cache data from API - Cache then network
             if (cacheFirst) {
                 const cachedJson: JsonResponse = await getLocalEventData()
                 setData(cachedJson)
@@ -28,9 +29,11 @@ function useFetch<T>(url: string, cacheFirst: boolean = false): [T | undefined, 
                 if (hasUpdate) {
                     await saveEventDataLocally(json, true)
 
+                    //Fire db update event
                     emitter.emit('db-update')
                 }
             } else {
+                //2: Cache data from API - Network first w/ cache fallback
                 const json = await getJSON(url)
 
                 setData(json)
