@@ -19,7 +19,7 @@ export function DbUpdateToast({ toast, onClick }: Props) {
                         Some new events have been created. <b>tap here</b> to refresh
                     </Text>
                 ),
-                autoDismissTimeout: 0
+                autoDismissTimeout: 8000
             })
         }
 
