@@ -4,6 +4,7 @@ import App from './App'
 import { Workbox } from 'workbox-window'
 import emitter from './emitter'
 import { Global, css } from '@emotion/core'
+import { enableServiceWorker } from './config/features.json'
 
 render(
   <>
@@ -43,8 +44,18 @@ const registerServiceWorker = async () => {
   }
 }
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    // await registerServiceWorker()
+const unregisterServiceWorker = async () => {
+  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+    for (let registration of registrations) {
+      registration.unregister()
+    }
   })
+}
+// In some cases we may want to only enable service workers in production.
+if ('serviceWorker' in navigator && enableServiceWorker) {
+  window.addEventListener('load', async () => {
+    await registerServiceWorker()
+  })
+} else {
+  unregisterServiceWorker()
 }
