@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Paragraph } from 'fannypack'
 
-function Event({ event }: { event: { id; title; date; city; note } }) {
+function EventCard({ event }: { event: CalendarEvent }) {
   return (
     <Card title={event.title}>
       <Paragraph>{event.date}</Paragraph>
@@ -11,4 +11,4 @@ function Event({ event }: { event: { id; title; date; city; note } }) {
   )
 }
 
-export default Event
+export default EventCard
