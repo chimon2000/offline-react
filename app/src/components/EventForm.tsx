@@ -18,19 +18,28 @@ const EventSchema = Yup.object().shape({
   title: Yup.string().required('Required')
 })
 
-function EventForm({ onSubmit, onReset }) {
+type OnSubmitFn = (data: CalendarEvent) => void
+type OnResetFn = () => void
+
+type Props = {
+  onSubmit: OnSubmitFn
+  onReset: OnResetFn
+}
+
+function EventForm({ onSubmit, onReset }: Props) {
+  const initialValues: CalendarEvent = {
+    id: '',
+    title: '',
+    date: '',
+    city: '',
+    note: ''
+  }
+
   return (
     <Formik
-      initialValues={{ title: '', date: '', city: '', note: '' }}
+      initialValues={initialValues}
       validationSchema={EventSchema}
-      onSubmit={data => {
-        if (!data.title) {
-          alert('Title is required')
-          return
-        }
-
-        onSubmit(data)
-      }}
+      onSubmit={onSubmit}
       onReset={onReset}
     >
       <Form>
