@@ -3,14 +3,12 @@ import { saveEventDataLocally, getLocalEventData } from '../db'
 import emitter from '../emitter'
 import { enableOptimisticCache } from '../config/features.json'
 import isEqual from 'react-fast-compare'
+import ky from 'ky'
 
 type JsonResponse = any
 
 async function getJSON(url) {
-  const response = await fetch(url)
-  const json = await response.json()
-
-  return json
+  return ky.get(url).json<{}>()
 }
 
 function useFetch<T>(url: string): [T | undefined, boolean] {
@@ -36,7 +34,7 @@ function useFetch<T>(url: string): [T | undefined, boolean] {
         }
       } else {
         //2: Cache data from API - Network first w/ cache fallback
-        const json = await getJSON(url)
+        const json = await ky.get(url).json<T>()
 
         setData(json)
         setLoading(false)
