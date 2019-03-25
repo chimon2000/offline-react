@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import {
   ThemeProvider,
   Heading,
@@ -10,66 +10,55 @@ import {
   Button,
   Pane
 } from 'fannypack'
-import { useFetch } from './hooks/use-fetch'
 import EventList from './components/EventList'
 import EventForm from './components/EventForm'
-import { saveEventDataLocally, getLocalEventData } from './db'
+import { getLocalEventData } from './db'
 import { hot } from 'react-hot-loader'
 
 import { CacheUpdateToast } from './components/CacheUpdateToast'
 import { DbUpdateToast } from './components/DbUpdateToast'
-
-const baseUrl = '/api'
+import { useEvents } from './hooks/use-events'
+import { addPostEvent } from './services/events'
 
 export function App() {
-  const [eventsJson, loading] = useFetch<any[]>(`${baseUrl}/getAll`, true)
-  const [events, updateEvents] = useState([])
-  useEffect(() => {
-    updateEvents(eventsJson)
-  }, [eventsJson])
+  const { loading, events, setEvents } = useEvents()
 
-  const addPostEvent = data => {
-    const newEvent = { id: Date.now(), ...data }
+  async function handleSubmit(data: CalendarEvent) {
+    const newEvent = await addPostEvent(data)
 
-    const body = JSON.stringify(newEvent)
-    const headers = new Headers({ 'Content-Type': 'application/json' })
     const updatedEvents = events.concat(newEvent)
-    updateEvents(updatedEvents)
-    saveEventDataLocally([newEvent])
-
-    return fetch(`${baseUrl}/add`, {
-      method: 'POST',
-      headers: headers,
-      body: body
-    })
+    setEvents(updatedEvents)
   }
 
   const updateEventsFromDb = async () => {
     const events = await getLocalEventData()
-    console.log({ events })
-    updateEvents(events)
+    setEvents(events)
   }
 
   return (
     <ThemeProvider>
       <Container>
-        <Toast.Container>
-          {toast => (
-            <React.Fragment>
-              <CacheUpdateToast toast={toast} />
-              <DbUpdateToast toast={toast} onClick={updateEventsFromDb} />
-            </React.Fragment>
-          )}
-        </Toast.Container>
+        {renderAppToasts({ updateEventsFromDb })}
         <Heading>Current Events {!loading && `(${events.length})`}</Heading>
-        {renderEventFormModal({ addPostEvent })}
+        {renderEventFormModal({ handleSubmit })}
         {loading ? <div>Loading...</div> : <EventList events={events} />}
       </Container>
     </ThemeProvider>
   )
 }
 
-const renderEventFormModal = ({ addPostEvent }) => (
+const renderAppToasts = ({ updateEventsFromDb }) => (
+  <Toast.Container>
+    {toast => (
+      <React.Fragment>
+        <CacheUpdateToast toast={toast} />
+        <DbUpdateToast toast={toast} onClick={updateEventsFromDb} />
+      </React.Fragment>
+    )}
+  </Toast.Container>
+)
+
+const renderEventFormModal = ({ handleSubmit }) => (
   <Modal.Container>
     {(modal: any) => (
       <>
@@ -81,7 +70,7 @@ const renderEventFormModal = ({ addPostEvent }) => (
         <DialogModal title="Add an event" hideOnClickOutside={false} {...modal}>
           <EventForm
             onSubmit={event => {
-              addPostEvent(event)
+              handleSubmit(event)
               modal.hide()
             }}
             onReset={modal.hide}
